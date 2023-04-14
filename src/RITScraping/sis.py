@@ -92,6 +92,13 @@ class SisScraper(DobCracker, Scraper):
         script_data = script[script.find("["):script.find("]") + 1].replace("\r", '').replace("\n", '')
         pattern = r'"(\w+)":\s*("[^"]+"|[\w\s]+)(?:,|$)'
         data = [dict(re.findall(pattern, raw)) for raw in re.findall(r"\{.*?}", script_data)]
+        if len(mark) < 7: return code, {
+            "sub": sub,
+            "attd": 0,
+            "cies": [],
+            "ces": [],
+            "tot": (0, 0),
+        }
         if len(mark[7]) == 1: mark[7] = ['0', '0']
         return code, {
             "sub": sub,
@@ -186,6 +193,7 @@ def macro(year: int,
           dry: bool = False):
     async def __macro():
         async with SisScraper(odd=odd) as SIS:
+            # SIS.RE_CACHE = True
             return await SIS.stats_dept(year, dept, roll_set, temp, dobs)
 
     stats = asyncio.run(__macro())

@@ -105,15 +105,16 @@ class AsyncCache:
 
         @wraps(func)
         async def wrapper(_=None, **kwargs):
+            re_cache = kwargs.pop("re_cache", False)
             _hash = self.hash(kwargs)
             if _ is not None: kwargs["self"] = _
-            try:
-                r = self._cache[_hash]
-                return r
-            except KeyError:
+            if re_cache or _hash not in self._cache:
                 result = await func(**kwargs)
                 self._cache[_hash] = result
                 return result
+            else:
+                r = self._cache[_hash]
+                return r
 
         return wrapper
 

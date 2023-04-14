@@ -51,17 +51,25 @@ class ExamScraper(Scraper):
         return await self.get_stats(*USNS)
 
 
-def macro(year: int, dept: str, temp=False, even=False, file=None, dry: bool = False):
+def macro(year: int, dept: str, temp=False, even=False, start=1, stop=150, file=None, dry: bool = False):
     async def __macro():
         async with ExamScraper(even) as EXAM:
-            return await EXAM.stats_dept(year, dept, temp)
+            return await EXAM.stats_dept(year, dept, temp, start=start, stop=stop)
 
     stats = asyncio.run(__macro())
+    sem = {stats[0]['sem']: 1}
+    for stat in stats[1:]:
+        if not stat: continue
+        if stat['sem'] not in sem:
+            sem[stat['sem']] = 1
+        else:
+            sem[stat['sem']] += 1
+    sem = max(sem, key=sem.get)
 
     if file is None and not dry:
         folder = f"exam/{dept}/{year}"
         if not os.path.exists(folder): os.makedirs(folder)
-        file = f"{folder}/{stats[0]['sem'].replace(' ', '_')}.csv"
+        file = f"{folder}/{sem.replace(' ', '_')}.csv"
 
     if file and not dry:
         with open(file, "w+") as f:
