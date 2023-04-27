@@ -6,10 +6,12 @@ def sub_lists(marks: dict):
 		sub_attds = [m["attd"] for m in marks.values()]
 		sub_marks = [m["tot"][0] for m in marks.values()]
 		sub_max_marks = [m["tot"][1] for m in marks.values()]
+		sub_avg_cie = [sum(mm[2] for mm in m["cies"]) / len(m["cies"]) for m in marks.values()]
+		sub_avg_ces = [sum(mm[2] for mm in m["ces"]) / len(m["ces"]) for m in marks.values()]
 	except KeyError:
 		print("Invalid Marks dict")
 		return
-	return sub_codes, sub_names, sub_attds, sub_marks, sub_max_marks
+	return sub_codes, sub_names, sub_attds, sub_marks, sub_max_marks, sub_avg_cie, sub_avg_ces
 
 
 def grade_estimates(sub_marks, sub_names, max_marks=100, **kwargs: int):
