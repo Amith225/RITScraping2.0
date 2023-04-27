@@ -14,14 +14,13 @@ def sub_lists(marks: dict):
 	return sub_codes, sub_names, sub_attds, sub_marks, sub_max_marks, sub_avg_cie, sub_avg_ces
 
 
-def grade_estimates(sub_marks, sub_names, max_marks=100, **kwargs: int):
-	"""
-	kwargs: grade: min_marks
-	"""
+def grade_estimates(sub_marks, sub_names, sub_max_marks, max_score=100, **min_scores: int):
 	grade_lists = {}
-	for grade, min_mark in kwargs.items():
-		grade_lists[grade] = lis = []
-		for mark, name in zip(sub_marks, sub_names):
-			to_score = to_score if 0 <= (to_score := min_mark - mark) <= max_marks / 2 else ""
-			lis.append(to_score * 2 if " lab" not in name.lower() else to_score)
+	for mark, name, max_mark in zip(sub_marks, sub_names, sub_max_marks):
+		mark = mark / max_mark * max_score / 2
+		estimate = {}
+		for grade, min_mark in min_scores.items():
+			to_score = to_score if 0 <= (to_score := min_mark - mark) <= max_score / 2 else ""
+			estimate[grade] = int(to_score) if to_score else "-"
+		yield estimate
 	return grade_lists
