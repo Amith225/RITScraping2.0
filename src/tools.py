@@ -15,11 +15,9 @@ def sub_lists(marks: dict):
 
 
 def grade_estimates(sub_marks, sub_names, sub_max_marks, max_score=100, **min_scores: int):
-	grade_lists = {}
 	for mark, name, max_mark in zip(sub_marks, sub_names, sub_max_marks):
 		estimate = {}
 		for grade, min_mark in min_scores.items():
 			to_score = to_score if 0 <= (to_score := min_mark - mark) <= max_score / 2 else ""
 			estimate[grade] = int(to_score) if to_score else "-"
 		yield estimate
-	return grade_lists
